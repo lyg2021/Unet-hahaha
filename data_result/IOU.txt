@@ -1,3 +1,16 @@
-0.0024234929331470555
-0.8535075065758561
-0.46003697959559836
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<DivBackward0>)
+nan
+0.0
+0.292428058950277
+0.4368024868899138
+0.47634898182455593
+0.4892379072664171
+0.49016577381505594
+0.4908718689040881
