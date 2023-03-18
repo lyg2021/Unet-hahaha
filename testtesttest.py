@@ -20,14 +20,18 @@ transform_to_PILImage = transforms.Compose([
 
 if __name__ == "__main__":
 
-    path = r"aeroscapes\SegmentationClass_road\041001_021.png"
+    path = r"aeroscapes\SegmentationClass\000001_001.png"
 
     Image.MAX_IMAGE_PIXELS = None
+    # image = cv2.imread(path)
+    # print(image.shape)
+
     image = Image.open(path)
-    print("图片通道数：", len(image.split()))
+
+    print("图片通道数：", len(image.split()), image.size)
 
     image_tensor = transform_to_Tensor(image)
-    print(image_tensor, image_tensor.unique())
+    print(image_tensor, image_tensor.shape)
 
 
     ##################################
