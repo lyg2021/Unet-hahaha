@@ -186,12 +186,12 @@ def IOU_calculate(predict:torch.Tensor, target:torch.Tensor, TP_TN_FP_FN: dict):
     fn = TP_TN_FP_FN["fn"]
 
     try:
-        # intersection = torch.multiply(predict, target)
-        # union = torch.add(predict, target)
-        # IOU = intersection.sum().item() / (union.sum().item() + 1e-10)
+        intersection = torch.multiply(predict, target)
+        union = torch.add(predict, target)
+        IOU = intersection.sum().item() / (union.sum().item() + 1e-10)
         ##################################################  # 这个计算精确，IOU相对会小
 
-        IOU = tp / float(tp + fp + fn)  # 这个计算的时候将置信度高于阈值的都设为正样本，低于阈值的都设为负样本，IOU会高些
+        # IOU = tp / float(tp + fp + fn)  # 这个计算的时候将置信度高于阈值的都设为正样本，低于阈值的都设为负样本，IOU会高些
     except ZeroDivisionError:
         IOU = 0.0
     

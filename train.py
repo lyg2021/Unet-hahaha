@@ -164,8 +164,8 @@ if __name__ == "__main__":
                 _output_image = output_image[0]
 
                 # 对输出结果进行二值化处理
-                _output_image[_output_image >= 0.5] = 1
-                _output_image[_output_image < 0.5] = 0
+                # _output_image[_output_image >= 0.5] = 1
+                # _output_image[_output_image < 0.5] = 0
 
                 # 将归一化后的灰度图还原，方便观察
                 _segment_image *= 255
