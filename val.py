@@ -186,12 +186,12 @@ def IOU_calculate(predict:torch.Tensor, target:torch.Tensor, TP_TN_FP_FN: dict):
     fn = TP_TN_FP_FN["fn"]
 
     try:
-        intersection = torch.multiply(predict, target)
-        union = torch.add(predict, target)
-        IOU = intersection.sum().item() / (union.sum().item() + 1e-10)
+        # intersection = torch.multiply(predict, target)
+        # union = torch.add(predict, target)
+        # IOU = intersection.sum().item() / (union.sum().item() + 1e-10)
         ##################################################  # 这个计算精确，IOU相对会小
 
-        # IOU = tp / float(tp + fp + fn)  # 这个计算的时候将置信度高于阈值的都设为正样本，低于阈值的都设为负样本，IOU会高些
+        IOU = tp / float(tp + fp + fn)  # 这个计算的时候将置信度高于阈值的都设为正样本，低于阈值的都设为负样本，IOU会高些
     except ZeroDivisionError:
         IOU = 0.0
     
@@ -199,8 +199,13 @@ def IOU_calculate(predict:torch.Tensor, target:torch.Tensor, TP_TN_FP_FN: dict):
 
 
 if __name__ == "__main__":
-    Val(IMAGE_SIZE=(256, 256),
-        BATCH_SIZE=32,
-        model_name="unet",
-        model_weight_path=r"output\20230315131657\weight\unet_10_20230315131657.pth"
+    """ model_name = ['unet', 'setr', 'deeplabv3plus_resnet50', 
+    'deeplabv3_resnet50', 'deeplabv3_hrnetv2_32', 'deeplabv3plus_hrnetv2_32'] """
+
+    model_name = "deeplabv3plus_hrnetv2_32"
+
+    Val(IMAGE_SIZE=(512, 512),
+        BATCH_SIZE=16,
+        model_name="deeplabv3_resnet50",
+        model_weight_path=r"output/20230318161715/weight/deeplabv3_100_20230318161715.pth"
         )

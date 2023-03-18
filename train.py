@@ -19,16 +19,17 @@ START_EPOCHS = 1
 END_EPOCHS = 100
 
 BATCH_SIZE = 4
-IMAGE_SIZE = (256, 256)
+IMAGE_SIZE = (512, 512)
 
-BATCH_SIZE_val = 2
-IMAGE_SIZE_val = (256, 256)
+BATCH_SIZE_val = 16
+IMAGE_SIZE_val = (512, 512)
 
 save_iterations = 200    # 每几个iteration保存一可视化效果图
 save_epochs = 5          # 每几个epoch保存一次权重并验证
 
-model_name = "deeplabv3"      # 模型的名称, 用于选择模型
-# 可选：unet, setr(没啥效果), deeplabv3plus, deeplabv3
+model_name = "deeplabv3_hrnetv2_32"      # 模型的名称, 用于选择模型
+""" model_name = ['unet', 'setr', 'deeplabv3plus_resnet50', 
+    'deeplabv3_resnet50', 'deeplabv3_hrnetv2_32', 'deeplabv3plus_hrnetv2_32'] """
 
 # ---设备配置---
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -164,8 +165,8 @@ if __name__ == "__main__":
                 _output_image = output_image[0]
 
                 # 对输出结果进行二值化处理
-                # _output_image[_output_image >= 0.5] = 1
-                # _output_image[_output_image < 0.5] = 0
+                _output_image[_output_image >= 0.5] = 1
+                _output_image[_output_image < 0.5] = 0
 
                 # 将归一化后的灰度图还原，方便观察
                 _segment_image *= 255
