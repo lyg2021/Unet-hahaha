@@ -9,9 +9,7 @@ from torch.utils.data import DataLoader
 from data import *
 
 # 模型
-from unet import *
-from SETR.transformer_seg import SETRModel
-from DeepLabV3Plus.network.modeling import _segm_resnet
+from modelLoad import Model_Load
 
 from val import Val
 
@@ -30,7 +28,7 @@ save_iterations = 200    # 每几个iteration保存一可视化效果图
 save_epochs = 5          # 每几个epoch保存一次权重并验证
 
 model_name = "deeplabv3plus"      # 模型的名称, 用于选择模型
-# 可选：unet, setr(没啥效果), deeplabv3plus
+# 可选：unet, setr(没啥效果), deeplabv3plus, deeplabv3
 
 # ---设备配置---
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -90,26 +88,7 @@ if __name__ == "__main__":
                              shuffle=True)
 
     # 实例化网络模型，并将其加载到设备上
-    if model_name == "unet":
-        model = Unet().to(DEVICE)
-
-    elif model_name == "setr":
-        model = SETRModel(patch_size=(32, 32),
-                        in_channels=3,
-                        out_channels=1,
-                        hidden_size=1024,
-                        num_hidden_layers=8,
-                        num_attention_heads=16,
-                        decode_features=[512, 256, 128, 64]).to(DEVICE)
-        
-    elif model_name == "deeplabv3plus":
-        model = _segm_resnet(name="deeplabv3plus",
-                         backbone_name="resnet50", 
-                         num_classes=1, output_stride=8, 
-                         pretrained_backbone=False).to(DEVICE)
-
-    else:
-        print("无 {} 模型".format(model_name))
+    model = Model_Load(model_name=model_name).to(DEVICE)
 
     # 判断是否存在已有的权重文件
     if os.path.exists(weight_path):

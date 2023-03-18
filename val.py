@@ -9,9 +9,7 @@ from torch.utils.data import DataLoader
 from data import *
 
 # 模型
-from unet import *
-from SETR.transformer_seg import SETRModel
-from DeepLabV3Plus.network.modeling import _segm_resnet
+from modelLoad import Model_Load
 
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -34,26 +32,7 @@ def Val(IMAGE_SIZE: tuple = (256, 256),
                              shuffle=True)
 
     # 实例化网络模型，并将其加载到设备上
-    if model_name == "unet":
-        model = Unet().to(DEVICE)
-
-    elif model_name == "setr":
-        model = SETRModel(patch_size=(32, 32),
-                          in_channels=3,
-                          out_channels=1,
-                          hidden_size=1024,
-                          num_hidden_layers=8,
-                          num_attention_heads=16,
-                          decode_features=[512, 256, 128, 64]).to(DEVICE)
-        
-    elif model_name == "deeplabv3plus":
-        model = _segm_resnet(name="deeplabv3plus",
-                         backbone_name="resnet50", 
-                         num_classes=1, output_stride=8, 
-                         pretrained_backbone=False).to(DEVICE)
-
-    else:
-        print("无 {} 模型".format(model_name))
+    model = Model_Load(model_name=model_name).to(DEVICE)
 
     if os.path.exists(model_weight_path):
         # 加载权重文件
@@ -62,6 +41,7 @@ def Val(IMAGE_SIZE: tuple = (256, 256),
         print("使用权重文件: {} 进行验证".format(model_weight_path))
     else:
         print("没有存在的权重文件")
+        return
 
     # 模型进入验证模式，不启用 Batch Normalization 和 Dropout
     model.eval()
@@ -209,9 +189,9 @@ def IOU_calculate(predict:torch.Tensor, target:torch.Tensor, TP_TN_FP_FN: dict):
         # intersection = torch.multiply(predict, target)
         # union = torch.add(predict, target)
         # IOU = intersection.sum().item() / (union.sum().item() + 1e-10)
-        ################################################## 
+        ##################################################  # 这个计算精确，IOU相对会小
 
-        IOU = tp / float(tp + fp + fn)  # 这个计算量小
+        IOU = tp / float(tp + fp + fn)  # 这个计算的时候将置信度高于阈值的都设为正样本，低于阈值的都设为负样本，IOU会高些
     except ZeroDivisionError:
         IOU = 0.0
     
@@ -222,5 +202,5 @@ if __name__ == "__main__":
     Val(IMAGE_SIZE=(256, 256),
         BATCH_SIZE=32,
         model_name="unet",
-        model_weight_path=r"useful_weight/unet_30_0_20230310103018.pth"
+        model_weight_path=r"output\20230315131657\weight\unet_10_20230315131657.pth"
         )
