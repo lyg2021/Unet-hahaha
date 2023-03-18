@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     ##################################
 
-    # image_array = np.asarray(image)    
+    # image_array = np.asarray(image) 
     # print(image_array, image_array.shape)
     # print(np.unique(image_array))
 
