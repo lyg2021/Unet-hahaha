@@ -1,5 +1,6 @@
 import torch
 
+# 模型
 from unet import *
 from SETR.transformer_seg import SETRModel
 from DeepLabV3Plus.network.modeling import _segm_resnet
@@ -32,6 +33,7 @@ def Model_Load(model_name:str):
                          backbone_name="resnet50", 
                          num_classes=1, output_stride=8, 
                          pretrained_backbone=False)
+        return model
 
     else:
         print("无 {} 模型".format(model_name))

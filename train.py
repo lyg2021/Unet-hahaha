@@ -27,7 +27,7 @@ IMAGE_SIZE_val = (256, 256)
 save_iterations = 200    # 每几个iteration保存一可视化效果图
 save_epochs = 5          # 每几个epoch保存一次权重并验证
 
-model_name = "deeplabv3plus"      # 模型的名称, 用于选择模型
+model_name = "deeplabv3"      # 模型的名称, 用于选择模型
 # 可选：unet, setr(没啥效果), deeplabv3plus, deeplabv3
 
 # ---设备配置---
@@ -88,7 +88,8 @@ if __name__ == "__main__":
                              shuffle=True)
 
     # 实例化网络模型，并将其加载到设备上
-    model = Model_Load(model_name=model_name).to(DEVICE)
+    model = Model_Load(model_name=model_name)
+    model = model.to(DEVICE)
 
     # 判断是否存在已有的权重文件
     if os.path.exists(weight_path):
