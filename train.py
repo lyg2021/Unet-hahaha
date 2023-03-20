@@ -12,10 +12,12 @@ from data import *
 from modelLoad import Model_Load
 
 from val import Val
-
+"""待完善
+    1. 保存最佳模型方法
+    2. """
 
 # ---超参数---
-START_EPOCHS = 1
+START_EPOCHS = 31
 END_EPOCHS = 100
 
 BATCH_SIZE = 4
@@ -35,7 +37,7 @@ model_name = "deeplabv3_hrnetv2_32"      # 模型的名称, 用于选择模型
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # DEVICE = torch.device("cup")    # 用于测试，有些在gpu上运行发生的错误不显示，放在cpu上就好了-------------------------很管用！
 
-weight_path = r"none"
+weight_path = r"output/20230318200838/weight/deeplabv3_hrnetv2_32_30_20230318200838.pth"
 
 
 # ---路径配置---
@@ -183,7 +185,7 @@ if __name__ == "__main__":
                     view_image_dir, "{}_{}_{}_{}.jpg".format(model_name, epoch, iterations, current_time)))
                 
             
-        # 每 x 个 Epoch 保存一个权重文件,并进行一次Val
+        # 每 save_epochs 个 Epoch 保存一个权重文件,并进行一次Val
         if epoch % save_epochs == 0:
             torch.save(model.state_dict(), os.path.join(
                 weight_dir, "{}_{}_{}.pth".format(model_name, epoch, current_time)))
