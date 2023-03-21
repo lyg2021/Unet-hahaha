@@ -98,6 +98,8 @@ def Val(IMAGE_SIZE: tuple = (256, 256),
 
     print(f"Accuracy:{Accuracy}\nPrecision:{Precision}\nRecall:{Recall}\nIOU:{IOU}\n")
 
+    return IOU
+
 
 def Calculate_TP_TN_FP_FN(predict: torch.Tensor, target: torch.Tensor):
     """计算TP、TN、FP、FN
