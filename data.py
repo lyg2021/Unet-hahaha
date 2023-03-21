@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 import torch
 
-from utils import *
+from PIL import Image
 
 
 """VOC 格式数据"""

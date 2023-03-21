@@ -15,18 +15,23 @@ from modelLoad import Model_Load
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def Val(IMAGE_SIZE: tuple = (256, 256), 
-        BATCH_SIZE: int = 4, 
-        model_name: str = "unet", 
-        model_weight_path: str = "None", 
-        save_path: str = "data_result"):
+def Val_or_Test(IMAGE_SIZE: tuple = (256, 256),
+                BATCH_SIZE: int = 4,
+                model_name: str = "unet",
+                model_weight_path: str = "None",
+                save_path: str = "data_result",
+                mode: str = "val"):
 
-    # 数据加载，DataLoader(data中定义的继承了Dataset类的类，shuffle是否打乱)
+    # 建个文件夹保存val或test
+    if not os.path.exists(os.path.join(save_path, mode)):
+        os.makedirs(os.path.join(save_path, mode))
+
+    # 数据加载，DataLoader(data中定义的继承了Dataset类的类，shuffle是否打乱), 设置mode为val或者test
     data_loader = DataLoader(MyDataset(root_path=r"aeroscapes",
                                        mask_image_path=r"SegmentationClass_road",
                                        original_image_path=r"JPEGImages",
                                        txt_imageset_path=r"ImageSets",
-                                       mode="val",
+                                       mode=mode,
                                        image_size=IMAGE_SIZE),
                              batch_size=BATCH_SIZE,
                              shuffle=True)
@@ -38,7 +43,10 @@ def Val(IMAGE_SIZE: tuple = (256, 256),
         # 加载权重文件
         state_dict = torch.load(model_weight_path)
         model.load_state_dict(state_dict=state_dict)
-        print("使用权重文件: {} 进行验证".format(model_weight_path))
+        if mode == "val":
+            print("使用权重文件: {} 进行验证".format(model_weight_path))
+        elif mode == "test":
+            print("使用权重文件: {} 进行测试".format(model_weight_path))
     else:
         print("没有存在的权重文件")
         return
@@ -54,7 +62,7 @@ def Val(IMAGE_SIZE: tuple = (256, 256),
 
     # 也不更新梯度，虽然没有使用loss.backward不会进行反向传播，但torch会自己求导，关掉节省显存
     with torch.no_grad():
-    # 开始验证val
+        # 开始验证val，或测试test
         for iterations, (image, segment_image) in enumerate(data_loader):
 
             # 将tensor加载到设备上
@@ -84,19 +92,22 @@ def Val(IMAGE_SIZE: tuple = (256, 256),
     Recall = Recall_total / total_num
     IOU = IOU_total / total_num
 
-    with open(os.path.join(save_path, "Accuracy.txt"), mode="a", encoding="utf-8") as file:
+    # 前面的mode是字符串"val"或"test"
+    with open(os.path.join(save_path, mode, "Accuracy.txt"), mode="a", encoding="utf-8") as file:
         file.write("{}\n".format(Accuracy))
 
-    with open(os.path.join(save_path, "Precision.txt"), mode="a", encoding="utf-8") as file:
+    with open(os.path.join(save_path, mode, "Precision.txt"), mode="a", encoding="utf-8") as file:
         file.write("{}\n".format(Precision))
 
-    with open(os.path.join(save_path, "Recall.txt"), mode="a", encoding="utf-8") as file:
+    with open(os.path.join(save_path, mode, "Recall.txt"), mode="a", encoding="utf-8") as file:
         file.write("{}\n".format(Recall))
 
-    with open(os.path.join(save_path, "IOU.txt"), mode="a", encoding="utf-8") as file:
+    with open(os.path.join(save_path, mode, "IOU.txt"), mode="a", encoding="utf-8") as file:
         file.write("{}\n".format(IOU))
 
-    print(f"Accuracy:{Accuracy}\nPrecision:{Precision}\nRecall:{Recall}\nIOU:{IOU}\n")
+    print(f"{mode}_Accuracy:{Accuracy}\n{mode}_Precision:{Precision}\n{mode}_Recall:{Recall}\n{mode}_IOU:{IOU}\n")
+
+    return IOU
 
 
 def Calculate_TP_TN_FP_FN(predict: torch.Tensor, target: torch.Tensor):
@@ -145,8 +156,9 @@ def Accuracy_calculate(TP_TN_FP_FN: dict):
         Accuracy = (tp + tn) / float(tp + tn + fp + fn)
     except ZeroDivisionError:
         Accuracy = 0.0
-    
+
     return Accuracy
+
 
 def Precision_calculate(TP_TN_FP_FN: dict):
     """精准率(Precision)又称查准率,预测结果中某类别预测正确的概率，对应语义分割的类别像素准确率 CPA"""
@@ -160,8 +172,9 @@ def Precision_calculate(TP_TN_FP_FN: dict):
         # Precision2 = tn / float(tn + fn)
     except ZeroDivisionError:
         Precision = 0.0
-    
+
     return Precision
+
 
 def Recall_calculate(TP_TN_FP_FN: dict):
     """召回率(Recall)又称查全率,预测结果中某类别预测正确的概率,在语义分割常用指标没有对应关系"""
@@ -175,10 +188,11 @@ def Recall_calculate(TP_TN_FP_FN: dict):
         # Recall2 = tn / float(tn + fp)
     except ZeroDivisionError:
         Recall = 0.0
-    
+
     return Recall
 
-def IOU_calculate(predict:torch.Tensor, target:torch.Tensor, TP_TN_FP_FN: dict):
+
+def IOU_calculate(predict: torch.Tensor, target: torch.Tensor, TP_TN_FP_FN: dict):
     """IOU 交并比"""
     tp = TP_TN_FP_FN["tp"]
     tn = TP_TN_FP_FN["tn"]
@@ -189,18 +203,24 @@ def IOU_calculate(predict:torch.Tensor, target:torch.Tensor, TP_TN_FP_FN: dict):
         # intersection = torch.multiply(predict, target)
         # union = torch.add(predict, target)
         # IOU = intersection.sum().item() / (union.sum().item() + 1e-10)
-        ##################################################  # 这个计算精确，IOU相对会小
+        # 这个计算精确，IOU相对会小
 
-        IOU = tp / float(tp + fp + fn)  # 这个计算的时候将置信度高于阈值的都设为正样本，低于阈值的都设为负样本，IOU会高些
+        # 这个计算的时候将置信度高于阈值的都设为正样本，低于阈值的都设为负样本，IOU会高些
+        IOU = tp / float(tp + fp + fn)
     except ZeroDivisionError:
         IOU = 0.0
-    
+
     return IOU
 
 
 if __name__ == "__main__":
-    Val(IMAGE_SIZE=(256, 256),
-        BATCH_SIZE=32,
-        model_name="unet",
-        model_weight_path=r"output\20230315131657\weight\unet_10_20230315131657.pth"
+    """ model_name = ['unet', 'setr', 'deeplabv3plus_resnet50', 
+    'deeplabv3_resnet50', 'deeplabv3_hrnetv2_32', 'deeplabv3plus_hrnetv2_32'] """
+
+    model_name = "deeplabv3plus_hrnetv2_32"
+
+    Val_or_Test(IMAGE_SIZE=(512, 512),
+        BATCH_SIZE=16,
+        model_name="deeplabv3_resnet50",
+        model_weight_path=r"output/20230318161715/weight/deeplabv3_100_20230318161715.pth"
         )
