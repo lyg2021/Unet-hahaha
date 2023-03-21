@@ -11,7 +11,7 @@ from data import *
 # 模型
 from modelLoad import Model_Load
 
-from val import Val
+from val_or_test import Val_or_Test
 """待完善
     1. 保存最佳模型方法
     2. """
@@ -30,6 +30,7 @@ save_iterations = 200    # 每几个iteration保存一可视化效果图
 save_epochs = 5          # 每几个epoch保存一次权重并验证
 
 best_IOU = 0.0  # 初始化最高IOU，用于保存最佳模型时的判断
+best_weight_save_exactly_path = ""  # 初始化IOU最佳的模型路径，供最终测试使用
 
 model_name = "deeplabv3plus_hrnetv2_32"      # 模型的名称, 用于选择模型
 """ model_name = ['unet', 'setr', 'deeplabv3plus_resnet50', 
@@ -192,17 +193,27 @@ if __name__ == "__main__":
         if epoch % save_epochs == 0:
             weight_save_exactly_path = os.path.join(   # 模型保存的具体路径
                 weight_dir, "{}_{}_{}.pth".format(model_name, epoch, current_time))
-            
+
             torch.save(model.state_dict(), weight_save_exactly_path)
 
             # 验证
-            IOU = Val(IMAGE_SIZE=IMAGE_SIZE_val,
-                      BATCH_SIZE=BATCH_SIZE_val,
-                      model_name=model_name,
-                      model_weight_path=os.path.join(
-                          weight_dir, "{}_{}_{}.pth".format(model_name, epoch, current_time)),
-                      save_path=data_result_dir)
+            IOU = Val_or_Test(IMAGE_SIZE=IMAGE_SIZE_val,
+                              BATCH_SIZE=BATCH_SIZE_val,
+                              model_name=model_name,
+                              model_weight_path=os.path.join(
+                                  weight_dir, "{}_{}_{}.pth".format(model_name, epoch, current_time)),
+                              save_path=data_result_dir,
+                              mode="val")
 
             if IOU > best_IOU:  # 保存最佳模型
                 with open(os.path.join(data_result_dir, "best_model_path.txt"), mode="w", encoding="utf-8") as file:
                     file.write(weight_save_exactly_path)
+                best_weight_save_exactly_path = weight_save_exactly_path
+
+    # 最终测试
+    Val_or_Test(IMAGE_SIZE=IMAGE_SIZE_val,
+                BATCH_SIZE=BATCH_SIZE_val,
+                model_name=model_name,
+                model_weight_path=best_weight_save_exactly_path,
+                save_path=data_result_dir,
+                mode="test")
