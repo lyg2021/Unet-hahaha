@@ -39,14 +39,14 @@ def Model_Load(model_name: str):
                              pretrained_backbone=False)
         return model
 
-    elif model_name == "deeplabv3_hrnetv2_32":      # 正在跑，换成了512*512的输入，之前都是256*256的
+    elif model_name == "deeplabv3_hrnetv2_32":      # 换成了512*512的输入，之前都是256*256的，跑完，效果不错
         model = _segm_hrnet(name="deeplabv3",
                             backbone_name="hrnetv2_32",
                             num_classes=1,
                             pretrained_backbone=False)
         return model
 
-    elif model_name == "deeplabv3plus_hrnetv2_32":      # 待跑
+    elif model_name == "deeplabv3plus_hrnetv2_32":      # 正在跑
         model = _segm_hrnet(name="deeplabv3plus",
                             backbone_name="hrnetv2_32",
                             num_classes=1,

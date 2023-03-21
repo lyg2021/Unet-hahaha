@@ -17,7 +17,7 @@ from val import Val
     2. """
 
 # ---超参数---
-START_EPOCHS = 31
+START_EPOCHS = 1
 END_EPOCHS = 100
 
 BATCH_SIZE = 4
@@ -29,7 +29,7 @@ IMAGE_SIZE_val = (512, 512)
 save_iterations = 200    # 每几个iteration保存一可视化效果图
 save_epochs = 5          # 每几个epoch保存一次权重并验证
 
-model_name = "deeplabv3_hrnetv2_32"      # 模型的名称, 用于选择模型
+model_name = "deeplabv3plus_hrnetv2_32"      # 模型的名称, 用于选择模型
 """ model_name = ['unet', 'setr', 'deeplabv3plus_resnet50', 
     'deeplabv3_resnet50', 'deeplabv3_hrnetv2_32', 'deeplabv3plus_hrnetv2_32'] """
 
@@ -37,7 +37,7 @@ model_name = "deeplabv3_hrnetv2_32"      # 模型的名称, 用于选择模型
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # DEVICE = torch.device("cup")    # 用于测试，有些在gpu上运行发生的错误不显示，放在cpu上就好了-------------------------很管用！
 
-weight_path = r"output/20230318200838/weight/deeplabv3_hrnetv2_32_30_20230318200838.pth"
+weight_path = r"none"
 
 
 # ---路径配置---
