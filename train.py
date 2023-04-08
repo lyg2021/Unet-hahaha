@@ -55,7 +55,7 @@ txt_imageset_path = r"ImageSets"              # 划分的txt目录（相对根�
 current_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 # 创建输出根目录
-output_root_dir = os.path.join("output", "{}".format(current_time))
+output_root_dir = os.path.join("output", "{}_{}".format(model_name, current_time))
 if not os.path.exists(output_root_dir):
     os.makedirs(output_root_dir)
 
