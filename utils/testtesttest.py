@@ -5,10 +5,10 @@ from PIL import Image
 from torchvision import transforms
 import cv2
 import numpy as np
-from data import MyDataset
+# from data import MyDataset
 
 transform_to_Tensor = transforms.Compose([
-    transforms.Resize((256, 256)),
+    # transforms.Resize((256, 256)),
     transforms.ToTensor()
 ])
 """ToTensor最好不要在对图片处理的时候用，它会自动将图片的像素进行归一化处理"""
@@ -20,7 +20,7 @@ transform_to_PILImage = transforms.Compose([
 
 if __name__ == "__main__":
 
-    path = r"aeroscapes\SegmentationClass\000001_001.png"
+    path = r"M-33-7-A-d-2-3_2.png"
 
     Image.MAX_IMAGE_PIXELS = None
     # image = cv2.imread(path)
@@ -31,7 +31,14 @@ if __name__ == "__main__":
     print("图片通道数：", len(image.split()), image.size)
 
     image_tensor = transform_to_Tensor(image)
-    print(image_tensor, image_tensor.shape)
+
+    image_tensor *= 255
+
+    print(image_tensor.unique())
+    # print(image_tensor,image_tensor.shape)
+    # print(image_tensor, image_tensor.shape)
+    
+    
 
 
     ##################################
