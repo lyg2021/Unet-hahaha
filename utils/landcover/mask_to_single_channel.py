@@ -36,23 +36,23 @@ if __name__ == "__main__":
 
     for image_name in image_list:
         if ".png" in image_name:
-            # path = os.path.join(input_dir, image_name)
-            # # print(os.path.join(root_dir, image_name))
+            path = os.path.join(input_dir, image_name)
+            # print(os.path.join(root_dir, image_name))
 
-            # image = Image.open(path)
-            # # print("图片通道数：", len(image.split()), image.size)
+            image = Image.open(path)
+            # print("图片通道数：", len(image.split()), image.size)
 
-            # image_tensor = transform_to_Tensor(image)
-            # # image_tensor *= 255
+            image_tensor = transform_to_Tensor(image)
+            # image_tensor *= 255
 
-            # new_image_tensor = image_tensor[0]
-            # print(image_tensor.unique())
-            # # print(new_image_tensor.unique())
-            # # print(new_image_tensor,new_image_tensor.shape)
+            new_image_tensor = image_tensor[0]
+            print(image_tensor.unique())
+            # print(new_image_tensor.unique())
+            # print(new_image_tensor,new_image_tensor.shape)
 
-            # new_image = transform_to_PILImage(new_image_tensor)
+            new_image = transform_to_PILImage(new_image_tensor)
 
-            # new_image.save(path.replace(input_dir, output_dir))
+            new_image.save(path.replace(input_dir, output_dir))
             pass
         else:
             path = os.path.join(input_dir, image_name)

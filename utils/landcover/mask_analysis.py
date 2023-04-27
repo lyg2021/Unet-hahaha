@@ -16,14 +16,20 @@ transform_to_PILImage = transforms.Compose([
 if __name__ == "__main__":
 
     # 图片所在路径
-    mask_path = os.path.join("landcover", "ann_dir/test")
+    # mask_path = os.path.join("landcover", "ann_dir/test")
+    mask_path = r"masks"
 
     # 获取所有的mask图片名
     name = os.listdir(path=mask_path)
 
     global unique_cat
+    global mask_channels_num_set
+    global mask_shape_set
 
     unique_cat = torch.zeros(1)
+    mask_channels_num_set = set()
+    mask_shape_set = set()
+
 
     # 遍历这些图片，将它们都转化为tensor处理
     for index, image_mask_name in enumerate(name):
@@ -34,6 +40,14 @@ if __name__ == "__main__":
         # 用torchvision.transforms把PIL类型转化为tensor类型
         image_mask_tensor = transform_to_Tensor(image_mask)
         # print(image_mask_tensor, index)
+        
+        # 单张图片的尺寸获取，加入集合
+        image_mask_shape = image_mask.size
+        mask_shape_set.add(image_mask_shape)
+
+        # 单张图片的通道数获取，加入集合
+        image_mask_channels_num = len(image_mask.split())
+        mask_channels_num_set.add(image_mask_channels_num)
 
         # print(image_mask_tensor.shape)
         # break
@@ -57,9 +71,9 @@ if __name__ == "__main__":
     ture_unique = torch.unique(unique_cat)
 
     # 输出包含所有图片不同张量值的张量（无重复）
-    # tensor([0.0000, 0.0039, 0.0078, 0.0118, 0.0157, 0.0196, 0.0235, 0.0275, 0.0314, 0.0353, 0.0392, 0.0431])
-    # 共11个类，一个background，总计12个值
-    print("\n", ture_unique*255)
+    print("\nmask 标签中存在的像素值有：", ture_unique*255)
+    print("mask 标签的通道数为：", mask_channels_num_set)
+    print("mask 标签的分辨率为：", mask_shape_set)
 
     # print(image_mask_tensor)
 
