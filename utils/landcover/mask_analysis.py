@@ -22,12 +22,13 @@ if __name__ == "__main__":
     # 获取所有的mask图片名
     name = os.listdir(path=mask_path)
 
-    global unique_cat
-    global mask_channels_num_set
-    global mask_shape_set
-
+    # 所有图片tensor的unique值的拼接
     unique_cat = torch.zeros(1)
+
+    # 所有图片通道数的集合，用于判断是否有多种通道数
     mask_channels_num_set = set()
+
+    # 所有图片分辨率的集合，用于判断是否有多种分辨率
     mask_shape_set = set()
 
 
